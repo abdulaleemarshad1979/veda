@@ -104,10 +104,15 @@
             direction: ltr;
         }
         .glass-panel {
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .glass-panel:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
         }
         .neon-glow:hover {
             box-shadow: 0 0 20px rgba(0, 229, 91, 0.5);
@@ -121,6 +126,271 @@
         .timeline-line {
             background: linear-gradient(to bottom, #00ff66, #00dbe9);
         }
+
+        /* ── GLITCH TEXT ── */
+        @keyframes glitch-skew {
+            0%   { transform: skew(0deg); }
+            10%  { transform: skew(-1deg); }
+            20%  { transform: skew(0deg); }
+            80%  { transform: skew(0deg); }
+            90%  { transform: skew(0.5deg); }
+            100% { transform: skew(0deg); }
+        }
+        @keyframes glitch-clip-1 {
+            0%   { clip-path: inset(40% 0 50% 0); transform: translate(-4px, 0); }
+            20%  { clip-path: inset(10% 0 80% 0); transform: translate(4px, 0); }
+            40%  { clip-path: inset(70% 0 5% 0);  transform: translate(-2px, 0); }
+            60%  { clip-path: inset(30% 0 60% 0); transform: translate(3px, 0); }
+            80%  { clip-path: inset(55% 0 30% 0); transform: translate(-3px, 0); }
+            100% { clip-path: inset(40% 0 50% 0); transform: translate(0, 0); }
+        }
+        @keyframes glitch-clip-2 {
+            0%   { clip-path: inset(20% 0 70% 0); transform: translate(4px, 0); }
+            25%  { clip-path: inset(60% 0 20% 0); transform: translate(-4px, 0); }
+            50%  { clip-path: inset(5% 0 85% 0);  transform: translate(2px, 0); }
+            75%  { clip-path: inset(75% 0 5% 0);  transform: translate(-2px, 0); }
+            100% { clip-path: inset(20% 0 70% 0); transform: translate(4px, 0); }
+        }
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch-wrapper::before,
+        .glitch-wrapper::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+        }
+        .glitch-wrapper::before {
+            color: #00dbe9;
+            animation: glitch-clip-1 3.5s infinite steps(1);
+            opacity: 0.7;
+        }
+        .glitch-wrapper::after {
+            color: #ff4d6d;
+            animation: glitch-clip-2 3.5s infinite steps(1) 0.05s;
+            opacity: 0.7;
+        }
+        .glitch-wrapper {
+            animation: glitch-skew 3.5s infinite steps(1);
+        }
+
+        /* ── SCANLINE ── */
+        @keyframes scanline-sweep {
+            0%   { top: -8px; opacity: 0; }
+            5%   { opacity: 1; }
+            95%  { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .scanline-container { position: relative; overflow: hidden; }
+        .scanline {
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(0,229,91,0.15), transparent);
+            animation: scanline-sweep 6s linear infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* ── SCROLL REVEAL ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-28px);
+            transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal-left.visible { opacity: 1; transform: translateX(0); }
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(28px);
+            transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+        /* stagger helpers */
+        .delay-100 { transition-delay: 0.1s !important; }
+        .delay-200 { transition-delay: 0.2s !important; }
+        .delay-300 { transition-delay: 0.3s !important; }
+        .delay-400 { transition-delay: 0.4s !important; }
+        .delay-500 { transition-delay: 0.5s !important; }
+
+        /* ── COUNTDOWN ── */
+        .countdown-block {
+            display: flex; flex-direction: column; align-items: center;
+            min-width: 80px;
+        }
+        .countdown-num {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1;
+            color: #00e55b;
+            letter-spacing: -0.02em;
+            transition: transform 0.15s ease;
+        }
+        .countdown-num.tick { transform: scale(1.12); }
+        .countdown-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #849581;
+            letter-spacing: 0.15em;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        .countdown-sep {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            color: #3b4b3a;
+            align-self: flex-start;
+            margin-top: 4px;
+            line-height: 1;
+        }
+
+        /* ── NAV LINK UNDERLINE ANIMATION ── */
+        .nav-link-animated {
+            position: relative;
+            padding-bottom: 2px;
+        }
+        .nav-link-animated::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background: #00e55b;
+            transition: width 0.25s ease;
+        }
+        .nav-link-animated:hover::after { width: 100%; }
+        .nav-link-animated.active::after { width: 100%; }
+
+        /* ── CARD HOVER LIFT ── */
+        .card-lift {
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
+        }
+        .card-lift:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+        }
+
+        /* ── STAT COUNTER PULSE ── */
+        @keyframes stat-pop {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.06); color: #00ff66; }
+            100% { transform: scale(1); }
+        }
+        .stat-pop { animation: stat-pop 0.4s ease; }
+
+        /* ── HERO BADGE BLINK ── */
+        @keyframes blink-cursor {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+        .cursor-blink::after {
+            content: '|';
+            animation: blink-cursor 1s step-end infinite;
+            color: #00e55b;
+            margin-left: 2px;
+        }
+
+        /* ── TIMELINE DOT PULSE ── */
+        @keyframes dot-ping {
+            0%   { box-shadow: 0 0 0 0 rgba(0,229,91,0.5); }
+            70%  { box-shadow: 0 0 0 10px rgba(0,229,91,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,229,91,0); }
+        }
+        .timeline-dot-green { animation: dot-ping 2s ease infinite; }
+        @keyframes dot-ping-cyan {
+            0%   { box-shadow: 0 0 0 0 rgba(0,219,233,0.5); }
+            70%  { box-shadow: 0 0 0 10px rgba(0,219,233,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,219,233,0); }
+        }
+        .timeline-dot-cyan { animation: dot-ping-cyan 2s ease infinite 0.4s; }
+        @keyframes dot-ping-red {
+            0%   { box-shadow: 0 0 0 0 rgba(255,180,171,0.5); }
+            70%  { box-shadow: 0 0 0 10px rgba(255,180,171,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,180,171,0); }
+        }
+        .timeline-dot-red { animation: dot-ping-red 2s ease infinite 0.8s; }
+
+        /* ── FLOATING HERO ELEMENTS ── */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0) rotate(12deg); }
+            50%       { transform: translateY(-14px) rotate(12deg); }
+        }
+        @keyframes float-slower {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-10px); }
+        }
+        .float-anim  { animation: float-slow   4s ease-in-out infinite; }
+        .float-anim2 { animation: float-slower 5s ease-in-out infinite 1s; }
+
+        /* ── SPONSOR HOVER ── */
+        .sponsor-card {
+            transition: filter 0.4s ease, transform 0.3s ease, border-color 0.3s ease;
+        }
+        .sponsor-card:hover {
+            transform: scale(1.03);
+        }
+
+        /* ── REGISTER BUTTON SHIMMER ── */
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .btn-shimmer {
+            background: linear-gradient(
+                105deg,
+                #00ff66 0%,
+                #00ff66 40%,
+                #6bffb8 50%,
+                #00ff66 60%,
+                #00ff66 100%
+            );
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+        .btn-shimmer:hover { animation-duration: 1s; }
+
+        /* ── INPUT FOCUS LINE ── */
+        input:focus, select:focus {
+            outline: none;
+        }
+        .input-animated {
+            position: relative;
+        }
+        .input-animated::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background: #00dbe9;
+            transition: width 0.3s ease;
+        }
+        .input-animated:focus-within::after { width: 100%; }
+
+        /* ── HERO HERO CONTENT ENTRANCE ── */
+        @keyframes hero-enter {
+            0%   { opacity: 0; transform: translateY(24px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .hero-badge    { animation: hero-enter 0.5s ease both 0.1s; }
+        .hero-title    { animation: hero-enter 0.6s ease both 0.25s; }
+        .hero-subtitle { animation: hero-enter 0.6s ease both 0.4s; }
+        .hero-cta      { animation: hero-enter 0.6s ease both 0.55s; }
+        .hero-countdown-wrap { animation: hero-enter 0.6s ease both 0.65s; }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
@@ -128,10 +398,11 @@
 <nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b-4 border-surface-container-highest shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] flex justify-between items-center px-margin-mobile md:px-margin-desktop h-24">
 <div class="font-headline-lg text-primary-fixed-dim tracking-tighter text-2xl md:text-4xl">TECH SYNERGY</div>
 <!-- Navigation Links (Desktop) -->
-<div class="hidden md:flex gap-8 items-center h-full"><a class="font-label-mono text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1" href="#home">Home</a>
-<a class="font-label-mono text-on-surface-variant hover:text-primary transition-colors" href="#events">Events</a>
-<a class="font-label-mono text-on-surface-variant hover:text-primary transition-colors" href="#registrations">Registrations</a>
-<a class="font-label-mono text-on-surface-variant hover:text-primary transition-colors" href="#about">About</a></div>
+<div class="hidden md:flex gap-8 items-center h-full">
+<a class="font-label-mono text-primary-fixed-dim nav-link-animated active" href="#home">Home</a>
+<a class="font-label-mono text-on-surface-variant hover:text-primary transition-colors nav-link-animated" href="#events">Events</a>
+<a class="font-label-mono text-on-surface-variant hover:text-primary transition-colors nav-link-animated" href="#registrations">Registrations</a>
+<a class="font-label-mono text-on-surface-variant hover:text-primary transition-colors nav-link-animated" href="#about">About</a></div>
 <div class="flex items-center gap-4">
 <button class="hidden sm:block font-label-mono text-on-surface-variant hover:text-secondary-fixed-dim underline decoration-2 transition-all duration-300">LOGIN</button>
 <button class="bg-primary-container text-on-primary-container px-6 py-3 font-label-mono font-bold hover:shadow-[0_0_20px_rgba(0,229,91,0.5)] transition-all duration-300 active:scale-90 uppercase" onclick="window.location.href='#registrations'">REGISTER</button>
